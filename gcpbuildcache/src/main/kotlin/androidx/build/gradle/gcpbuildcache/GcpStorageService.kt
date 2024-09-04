@@ -261,20 +261,7 @@ internal class GcpStorageService(
                         contents.byteInputStream(charset = Charsets.UTF_8),
                         transportOptions.httpTransportFactory
                     ).createScoped(scopes)
-                    try {
-                        // If the credentials have expired,
-                        // reauth is required by the user to be able to generate or refresh access token;
-                        // Refreshing the access token here helps us to provide a useful error message to the user
-                        // in case the credentials have expired
-                        credentials.refreshIfExpired()
-                    } catch (e: Exception) {
-                        throw GradleException(
-                            """
-                            "Your GCP Credentials have expired.
-                            Please regenerate credentials and try again.
-                            """.trimIndent()
-                        )
-                    }
+                    credentials.refreshIfExpired()
                     val tokenService = TokenInfoService.tokenService()
                     val tokenInfoResponse = tokenService.tokenInfo(credentials.accessToken.tokenValue).execute()
                     if (!tokenInfoResponse.isSuccessful) {
